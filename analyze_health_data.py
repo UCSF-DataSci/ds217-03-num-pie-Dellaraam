@@ -8,7 +8,7 @@ filtering, and report generation.
 """
 
 import numpy as np
-
+import sys
 
 def load_data(filename):
     """Load CSV data using NumPy.
@@ -30,7 +30,8 @@ def load_data(filename):
 
 
 def calculate_statistics(data):
-    """Calculate basic statistics for numeric columns.
+    """
+    Calculate basic statistics for numeric columns.
     
     Args:
         data: NumPy structured array
@@ -38,9 +39,14 @@ def calculate_statistics(data):
     Returns:
         Dictionary with statistics
     """
+    stats = {}
     # TODO: Calculate average heart rate using data['heart_rate'].mean()
+    stats['heart_rate_mean'] = float(data['heart_rate'].mean())
     # TODO: Calculate average systolic BP using data['blood_pressure_systolic'].mean()
+    stats['blood_pressure_mean'] = float(data['blood_pressure_systolic'].mean())
     # TODO: Calculate average glucose level using data['glucose_level'].mean()
+    stats['glusoce_level'] = float(data['glucose_level'].mean())
+    return stats
     # TODO: Return as dictionary with keys: 'avg_heart_rate', 'avg_systolic_bp', 'avg_glucose'
     pass
 
@@ -54,19 +60,20 @@ def find_abnormal_readings(data):
     Returns:
         Dictionary with counts
     """
+    stats = {}
     # TODO: Count readings where heart rate > 90 using boolean indexing
     # Example: high_hr_count = len(data[data['heart_rate'] > 90])
     # Or: high_hr_count = (data['heart_rate'] > 90).sum()
-    
+    stats['high_hr'] = int((data['heart_rate'] > 90).sum())
     # TODO: Count readings where systolic BP > 130 using boolean indexing
     # Example: high_bp_count = len(data[data['blood_pressure_systolic'] > 130])
-    
+    stats['high_bp'] = int((data['blood_pressure_systolic'] > 130).sum())
     # TODO: Count readings where glucose > 110 using boolean indexing
     # Example: high_glucose_count = len(data[data['glucose_level'] > 110])
-    
+    stats['high_glu'] = int((data['glucose_level'] > 110).sum())
     # TODO: Return dictionary with keys: 'high_heart_rate', 'high_blood_pressure', 'high_glucose'
+    return stats
     pass
-
 
 def generate_report(stats, abnormal, total_readings):
     """Generate formatted analysis report.
@@ -84,6 +91,8 @@ def generate_report(stats, abnormal, total_readings):
     # Example: f"Heart Rate: {stats['avg_heart_rate']:.1f} bpm"
     # TODO: Include section headers and labels for readability
     # TODO: Include total_readings, all averages, and all abnormal counts
+    report = f'Health Sensor Data Analysis Report\n =====================================\n Dataset Summary:\n - Total readings: {total_readings}\n Avarege Measurements:\n - Heart Rate: {stats['heart_rate_mean']:.1f} bpm\n - Systolic BP: {stats['blood_pressure_mean']:.1f} mmHg\n - Glucose Level: {stats['glusoce_level']:.1f} mg/dL\n Abnormal Readings: \n - High Heart Rate (>90): {abnormal['high_hr']:.1f} readings \n - High Blood Pressure (>130): {abnormal['high_bp']:.1f} readings \n - High Glucose (>110): {abnormal['high_glu']:.1f} readings'
+    return report
     pass
 
 
@@ -97,17 +106,29 @@ def save_report(report, filename):
     # TODO: Write the report to a file using open() with 'w' mode
     # Example: with open(filename, 'w') as f:
     #              f.write(report)
+    with open('output/analysis_report.txt', 'w') as file:
+        file.write(f'{report}')
     pass
 
 
 def main():
     """Main execution function."""
     # TODO: Load the data from 'health_data.csv' using load_data()
+    data = load_data(sys.argv[1])
     # TODO: Calculate statistics using calculate_statistics()
+    stats = calculate_statistics(data)
+    print(stats)
     # TODO: Find abnormal readings using find_abnormal_readings()
+    abnormal = find_abnormal_readings(data)
+    print(abnormal)
     # TODO: Calculate total readings using len(data)
+    total = len(data)
+    print(total)
     # TODO: Generate report using generate_report()
+    report = generate_report(stats, abnormal, total)
+    print(report)
     # TODO: Save to 'output/analysis_report.txt' using save_report()
+    save_report(report, data)
     # TODO: Print success message
     pass
 
